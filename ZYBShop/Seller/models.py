@@ -4,7 +4,7 @@ from django.db import models
 class GoodsType(models.Model):
     type_label=models.CharField(max_length=32)
     type_description=models.TextField(null=True,blank=True)
-    picture=models.ImageField(upload_to="images",default='/static/images/banner01.jpg')
+    picture=models.ImageField(upload_to="images",default='/static/seller/images/banner01.jpg')
 
 class Login(models.Model):
     email=models.EmailField()
@@ -30,7 +30,7 @@ class Goods(models.Model):
     goods_safe_date=models.IntegerField()
     goods_pro_time=models.DateField(auto_now=True)
     # goods_description=models.TextField()
-    goods_picture=models.ImageField(upload_to="images",default='/static/images/o.jpg')
+    goods_picture=models.ImageField(upload_to="images",default='/static/seller/images/kb.jpg')
     goods_status=models.IntegerField(default=1)   #0为下架，1为在售
 
     goods_type=models.ForeignKey(to=GoodsType,on_delete=models.CASCADE)

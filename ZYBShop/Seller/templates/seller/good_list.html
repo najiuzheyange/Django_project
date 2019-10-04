@@ -1,0 +1,64 @@
+{% extends 'seller/base.html' %}
+
+{% block title %}
+    商品列表页
+{% endblock %}
+
+
+{% block label %}
+  {{ goods_types }}
+    <a href="/Seller/goods_add/" class="btn btn-warning" style="float: right">添加商品</a>
+{% endblock %}
+
+
+{% block content %}
+    <div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>商品编号</th>
+                <th>商品名称</th>
+                <th>商品单价</th>
+                <th>商品数量</th>
+                <th>商品产地</th>
+                <th>商品保质期</th>
+                <th>商品操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for goods in goods_list %}
+            <tr>
+                <td>{{ goods.goods_number }}</td>
+                <td>{{ goods.goods_name }}</td>
+                <td>{{ goods.goods_price }}.$</td>
+                <td>{{ goods.goods_count }}</td>
+                <td>{{ goods.goods_location}}</td>
+                <td>{{ goods.goods_safe_date }}/月</td>
+                <td>
+                    <a href="" type="button" class="btn btn-primary">修改</a>
+                    {% ifequal goods.goods_status  0 %}
+                        <a href="/Seller/goods_status/up/{{ goods.id }}/" type="button" class="btn btn-success">上架</a>
+                    {% else %}
+                        <a href="/Seller/goods_status/down/{{ goods.id }}/" type="button" class="btn btn-danger">下架</a>
+                    {% endifequal %}
+
+                </td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+    </div>
+    <ul class="pagination" style="float: right;margin-right: 80px;">
+        {% for p in all_goods.page_range %}
+            <li class="paginate_button page-item previous">
+            {% ifequal status  '1' %}
+                <a href="/Seller/gl/{{ p }}/1" class="page-link">{{ p }}</a>
+            {% else %}
+                <a href="/Seller/gl/{{ p }}/0" class="page-link">{{ p }}</a>
+            {% endifequal %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

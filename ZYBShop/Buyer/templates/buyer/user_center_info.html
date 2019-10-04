@@ -1,0 +1,47 @@
+{% extends "buyer/base.html" %}
+
+
+
+{% block title %}
+    用户中心
+{% endblock %}
+
+{% block content %}
+    <div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/Buyer/user_center/" class="active">· 个人信息</a></li>
+				<li><a href="/Buyer/uco/">· 全部订单</a></li>
+				<li><a href="user_center_site.html">· 收货地址</a></li>
+			</ul>
+		</div>
+		<div class="right_content clearfix">
+				<div class="info_con clearfix">
+				<h3 class="common_title2">基本信息</h3>
+						<ul class="user_info_list">
+							<li><span>用户名：</span>182xxxx9700</li>
+							<li><span>联系方式：</span>182xxxx9700</li>
+							<li><span>联系地址：</span>北京市朝阳区</li>
+						</ul>
+				</div>
+
+				<h3 class="common_title2">最近浏览</h3>
+				<div class="has_view_list">
+					<ul class="goods_type_list clearfix">
+                {% for g in goods %}
+				<li>
+					<a href="detail.html"><img src="/static/{{ g.goods_picture }}"></a>
+					<h4><a href="detail.html">{{ g.goods_name }}</a></h4>
+					<div class="operate">
+						<span class="prize">￥{{ g.goods_price }}</span>
+						<span class="unit">{{ g.goods_price }}/500g</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+                {% endfor %}
+			</ul>
+		</div>
+		</div>
+	</div>
+{% endblock %}

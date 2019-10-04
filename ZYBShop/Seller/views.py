@@ -6,12 +6,21 @@ import requests
 
 from django.shortcuts import render,HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 from ZYBShop.settings import DING_URL
 from Buyer.views import setPassword
 from django.http import JsonResponse
 from Seller.models import *
 
-
+def loginValid(func):
+    def inner(request,*args,**kwargs):
+        cookie_username = request.COOKIES.get('username')
+        session_username = request.session.get('username')
+        if session_username and cookie_username and session_username==cookie_username:
+            return func(request, *args,**kwargs)
+        else:
+            return HttpResponseRedirect("/Seller/login/")
+    return inner
 
 def register(request):
     error_message = ""
@@ -133,5 +142,66 @@ def send_login_code(request):
         result["code"]=400
         result["data"]="请求错误"
     return JsonResponse(result)
+
+#商品操作
+@loginValid
+def goods_list(request, status, page=1):
+    user_id=request.COOKIES.get('user_id')
+    user=Login.objects.get(id=int(user_id))
+    page = int(page)
+    if status == "1":
+        goodses = Goods.objects.filter(goods_store=user, goods_status=1)
+        goods_types="在售商品"
+    elif status == '0':
+        goodses=Goods.objects.filter(goods_store=user, goods_status=0)
+        goods_types="下架商品"
+    else:
+        goodses = Goods.objects.all()  #获取所有的信息
+    all_goods = Paginator(goodses, 10)    #分页
+    goods_list = all_goods.page(page)     #生成所对应页码的所有信息
+    return render(request, 'seller/good_list.html', locals())
+
+@loginValid
+def personal_info(request):
+    user_id = request.COOKIES.get("user_id")
+    user = Login.objects.get(id=int(user_id))
+    if request.method == "POST":
+        user.username = request.POST.get("username")
+        user.gender = request.POST.get("gender")
+        user.age = request.POST.get("age")
+        user.phone_number = request.POST.get("phone_number")
+        user.address = request.POST.get("address")
+        user.photo = request.FILES.get("photo")
+        user.save()
+    return render(request, "seller/personal_info.html", locals())
+
+@loginValid
+def goods_add(request):
+    goods_type_list=GoodsType.objects.all()
+    if request.method == "POST":
+        data=request.POST
+        files=request.FILES
+
+        goods=Goods()
+        goods.goods_number=data.get('goods_number')
+        goods.goods_name=data.get('goods_name')
+        goods.goods_price=data.get('goods_price')
+        goods.goods_count=data.get('goods_count')
+        goods.goods_location=data.get('goods_location')
+        goods.goods_safe_date=data.get('goods_safe_date')
+        goods.goods_pro_time=data.get('goods_pro_time')
+        goods.goods_status=1
+
+        goods_type_id =int(data.get("goods_type"))
+        goods.goods_type=GoodsType.objects.get(id=goods_type_id)
+
+        goods.goods_picture=files.get('picture')
+
+        user_id=request.COOKIES.get('user_id')
+        goods.goods_store=Login.objects.get(id=int(user_id))
+        goods.save()
+
+
+    return render(request,"seller/goods_add.html",locals())
 # Create your views here.
 #继续做seller视图里面的登录功能
