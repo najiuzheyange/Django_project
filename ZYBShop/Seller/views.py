@@ -200,8 +200,48 @@ def goods_add(request):
         user_id=request.COOKIES.get('user_id')
         goods.goods_store=Login.objects.get(id=int(user_id))
         goods.save()
-
-
     return render(request,"seller/goods_add.html",locals())
+
+@loginValid
+def goods_status(request, state, id):
+    id = int(id)
+    goods=Goods.objects.get(id=id)
+    if state == "up":
+        goods.goods_status = 1
+    elif state == 'down':
+        goods.goods_status = 0
+    goods.save()
+    url=request.META.get("HTTP_REFERER", '/Seller/gl/1/1')
+    return HttpResponseRedirect(url)
+
+def order_list(request,status):
+    """
+    status订单的状态
+    0未支付
+    1已支付
+    2待收货
+    3/4 完成/拒收
+    :param request:
+    :param status:
+    :return:
+    """
+    status=int(status)
+
+    user_id=request.COOKIES.get("user_id")  #获取店铺id
+    store=Login.objects.get(id=user_id)     #获取店铺信息
+    store_order=store.orderinfo_set.filter(order_status=status).order_by("-id")    #获取该店铺的所有订单信息
+    # order_list=Login.objects.get(id=int(user_id)).orderinfo_set.all()
+    return render(request,"seller/order_list.html",locals())
+
+from Buyer.models import OrderInfo
+def change_order(request):
+    #通过订单详情id来锁定订单详情
+    order_id=request.GET.get("order_id")
+    #获取要修改的状态
+    order_status=request.GET.get("order_status")
+    order=OrderInfo.objects.get(id=order_id)
+    order.order_status = int(order_status)
+    order.save()
+    return JsonResponse({'data':"修改成功"})
 # Create your views here.
 #继续做seller视图里面的登录功能

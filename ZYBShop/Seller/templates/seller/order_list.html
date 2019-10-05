@@ -1,0 +1,66 @@
+{% extends 'seller/base.html' %}
+
+{% block title %}
+    商品列表页
+{% endblock %}
+
+
+{% block label %}
+  所有商品订单
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>订单编号</th>
+                <th>商品名称</th>
+                <th>商品价格</th>
+                <th>商品数量</th>
+                <th>买家名字</th>
+                <th>收货地址</th>
+                <th>商品操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orders in store_order %}
+            <tr>
+                <td>{{ orders.order_id.order_number }}</td>
+                <td>{{ orders.goods_name }}</td>
+                <td>{{ orders.goods_total_price}}.$</td>
+                <td>{{ orders.goods_count }}</td>
+                <td>{{ orders.order_id.order_user.username}}</td>
+                <td>湖南省张家界市</td>
+                <td>
+                    {% ifequal orders.order_status 0 %}
+                        <a href="" type="button" class="btn btn-primary">提醒支付</a>
+                    {% endifequal %}
+                    {% ifequal orders.order_status 1 %}
+                        <a href="/Seller/change_order/?order_id={{ orders.id }}&order_status=2" class="btn btn-facebook btn-user " type="button">收款发货</a>
+                        <a href="" type="button" class="btn btn-primary">修改地址</a>
+                    {% endifequal %}
+                    {% ifequal orders.order_status 2 %}
+                        <a href="" class="btn btn-facebook btn-user" type="button">提醒确认收货</a>
+                    {% endifequal %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+    </div>
+    <ul class="pagination" style="float: right;margin-right: 80px;">
+        {% for p in all_goods.page_range %}
+            <li class="paginate_button page-item previous">
+            {% ifequal status  '1' %}
+                <a href="/Seller/gl/{{ p }}/1" class="page-link">{{ p }}</a>
+            {% else %}
+                <a href="/Seller/gl/{{ p }}/0" class="page-link">{{ p }}</a>
+            {% endifequal %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
